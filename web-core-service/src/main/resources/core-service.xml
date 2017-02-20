@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd  
+       	http://www.springframework.org/schema/aop
+       	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+       	http://www.springframework.org/schema/tx
+       	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<context:component-scan base-package="limeng32.web.*" />
+
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="protocol" value="${email.protocol}" />
+		<property name="host" value="${email.host}" />
+		<property name="port" value="${email.port}" />
+		<property name="username" value="${email.username}" />
+		<property name="password" value="${email.password}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.${email.protocol}.auth">${email.auth}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean class="limeng32.web.core.service.WebEmailService">
+		<property name="javaMailSender" ref="javaMailSender" />
+		<property name="systemEmail" value="${email.username}" />
+	</bean>
+
+	<bean id="velocityEngine"
+		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityProperties">
+			<value>
+				resource.loader=class
+				class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+			</value>
+		</property>
+	</bean>
+
+	<bean id="thirdVelocityEmailService" class="limeng32.web.core.service.ThirdVelocityEmailService">
+		<property name="systemEmail" value="${email.username}" />
+	</bean>
+
+	<bean id="aliyunOss" class="limeng32.web.core.service.AliyunOss"
+		init-method="initOSS">
+		<property name="accessKeyId" value="${aliyun.accessKey.id}" />
+		<property name="accessKeySecret" value="${aliyun.accessKey.secret}" />
+		<property name="ossBucket" value="${aliyun.oss.bucket}" />
+		<property name="ossEndpoint" value="${aliyun.oss.endpoint}" />
+		<property name="ossFilepath" value="${aliyun.oss.filepath}" />
+		<property name="ossAttachmentlayout" value="${aliyun.oss.attachmentlayout}" />
+		<property name="ossPortraitlayout" value="${aliyun.oss.portraitlayout}" />
+		<property name="ossStorylayout" value="${aliyun.oss.storylayout}" />
+	</bean>
+</beans>
